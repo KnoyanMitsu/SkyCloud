@@ -1,3 +1,4 @@
+import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:skycloud/controller/profile.dart';
 
@@ -45,219 +46,217 @@ class _ProfilePageState extends State<ProfilePage> {
     final profile = _profile;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                profile != null
-                    ? Image.network(profile['banner'], fit: BoxFit.fitWidth)
-                    : Container(
-                        color: Colors.grey, width: double.infinity, height: 200,),
- 
-              ],
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 20, left: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: 
-                  [CircleAvatar(
-                      radius: 50,
-                      backgroundImage: NetworkImage(
-                          profile?['avatar'] ?? ''),
-                    ),
-                  Text(
-                    profile?['displayName'] ?? 'No Name',
-                    style: const TextStyle(
-                        fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  profile?['handle'] != null ?
-                  Text(
-                    '@' + profile?['handle'],
-                    style: const TextStyle(color: Colors.grey),
-                  ) : Text(
-                    'No Handle',
-                    style: const TextStyle(color: Colors.grey),
-                  ),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const Text("Followers: "),
-                      Text(
-                        profile?['followersCount'].toString() ?? '0',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(width: 40),
-                      const Text("Following: "),
-                      Text(
-                        profile?["followsCount"].toString() ?? "0",
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      )
-                    ],
-                  ),
-                  _buildDescription(profile?['description'] ?? ""),
-                                                  Divider(),
-                  const SizedBox(height: 20),
-                
-
+    return ColorfulSafeArea(
+            color: Theme.of(context).colorScheme.surface,
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        body: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  profile?['banner'] != null
+                      ? Image.network(profile?['banner'], fit: BoxFit.fitWidth)
+                      : Container(
+                          color: Theme.of(context).colorScheme.surface,
+                          width: double.infinity,
+                          height: 100,
+                        ),
                 ],
               ),
             ),
-          ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                final feed = _feed[index];
-                final post = feed['post'];
-                final reason = feed['reason'];
-                final author = post['author'];
-                final desc = post['record']['text'];
-                final embed = post['embed'];
-                String? thumbUrl;
-                if (embed != null &&
-                    embed['images'] != null &&
-                    embed['images'].isNotEmpty) {
-                  thumbUrl = embed['images'][0]['thumb'];
-                }
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      reason != null ?
-                      Padding(
-                          padding: const EdgeInsets.only(left: 50, bottom: 5),
-                          child: Row(
-                          children: [
-                              const Icon(
-                                Icons.repeat,
-                                size: 16,
-                              ),
-                              SizedBox(width: 5,),
-                              Text(
-                                "Repost by ${reason['by']['displayName']}",
-                              ),
-                            ],
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 20, left: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundImage: NetworkImage(profile?['avatar'] ?? ''),
+                    ),
+                    Text(
+                      profile?['displayName'] ?? 'No Name',
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    profile?['handle'] != null
+                        ? Text(
+                            '@' + profile?['handle'],
+                            style: const TextStyle(color: Colors.grey),
+                          )
+                        : Text(
+                            'No Handle',
+                            style: const TextStyle(color: Colors.grey),
                           ),
-                    ): Container(),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(context, '/profile', arguments: author['did']);
-                            },
-                            child: CircleAvatar(
-                              radius: 30,
-                              backgroundImage: NetworkImage(author['avatar']),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(author['displayName'],
-                                  style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold)),
-                              SizedBox(width: 5,),
-                              //  Text('@'+author['handle'],
-                              //     style: const TextStyle(
-                              //         fontSize: 14,
-                              //         color: Colors.grey),
-                              //   ),
-                                ],
-                              ),
-                              desc != null ? Text(desc) : Container(),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              thumbUrl != null
-                                  ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Image.network(
-                                        thumbUrl,
-                                        height: 430,
-                                        width: 430,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    )
-                                  : Container(),
-                              const SizedBox(height: 5,),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      IconButton( 
-                                        icon: const Icon(
-                                          Icons.favorite_outline,
-                                        ),
-                                        onPressed: () {},
-                                      ),
-                                      Text(post['likeCount'].toString()),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      IconButton(
-                                        icon: const Icon(
-                                          Icons.share_outlined,
-                                        ),
-                                        onPressed: () {},
-                                      ),
-                                      Text(post['repostCount'].toString())
-                                      ,
-                                    ],
-                                  ),
-
-                                  Row(
-                                    children: [
-                                      SizedBox(width: 30,),
-                                      IconButton(
-                                        icon: const Icon(
-                                          Icons.comment_outlined,
-                                        ),
-                                        onPressed: () {},
-                                      ),
-                                      Text(post['replyCount'].toString()),
-                                      SizedBox(width: 30,),
-                                    ],
-                                  )
-                                ],
-                              ),
-                              
-                            ],
-                          )),
-                        
-                        ],
-                      ),
-                      const Divider(),
-                    ],
-                  ),
-                );
-              },
-              childCount: _feed.length,
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const Text("Followers: "),
+                        Text(
+                          profile?['followersCount'].toString() ?? '0',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(width: 40),
+                        const Text("Following: "),
+                        Text(
+                          profile?["followsCount"].toString() ?? "0",
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
+                    _buildDescription(profile?['description'] ?? ""),
+                    Divider(),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ],
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final feed = _feed[index];
+                  final post = feed['post'];
+                  final reason = feed['reason'];
+                  final author = post['author'];
+                  final desc = post['record']['text'];
+                  final embed = post['embed'];
+                  String? thumbUrl;
+                  if (embed != null &&
+                      embed['images'] != null &&
+                      embed['images'].isNotEmpty) {
+                    thumbUrl = embed['images'][0]['thumb'];
+                  }
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        reason != null
+                            ? Padding(
+                                padding: const EdgeInsets.only(left: 50, bottom: 5),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.repeat,
+                                      size: 16,
+                                    ),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      "Repost by ${reason['by']['displayName']}",
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : Container(),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/profile',
+                                    arguments: author['did']);
+                              },
+                              child: CircleAvatar(
+                                radius: 30,
+                                backgroundImage: NetworkImage(author['avatar']),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                                child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(author['displayName'],
+                                        style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold)),
+                                    SizedBox(width: 5),
+                                  ],
+                                ),
+                                desc != null ? Text(desc) : Container(),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                thumbUrl != null
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Image.network(
+                                          thumbUrl,
+                                          height: 430,
+                                          width: 430,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : Container(),
+                                const SizedBox(height: 5),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.favorite_outline,
+                                          ),
+                                          onPressed: () {},
+                                        ),
+                                        Text(post['likeCount'].toString()),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.share_outlined,
+                                          ),
+                                          onPressed: () {},
+                                        ),
+                                        Text(post['repostCount'].toString()),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        SizedBox(width: 30),
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.comment_outlined,
+                                          ),
+                                          onPressed: () {},
+                                        ),
+                                        Text(post['replyCount'].toString()),
+                                        SizedBox(width: 30),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ],
+                            )),
+                          ],
+                        ),
+                        const Divider(),
+                      ],
+                    ),
+                  );
+                },
+                childCount: _feed.length,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

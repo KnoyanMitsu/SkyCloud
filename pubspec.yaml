@@ -39,6 +39,7 @@ dependencies:
   moon_design: ^0.33.3
   http: ^1.2.2
   skeletonizer: ^1.4.2
+  colorful_safe_area: ^1.0.0
 
 dev_dependencies:
   flutter_test:

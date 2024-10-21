@@ -1,3 +1,4 @@
+import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:skycloud/views/feed.dart';
 import 'package:skycloud/views/profile.dart';
@@ -13,6 +14,8 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
+
+
 class _MyAppState extends State<MyApp> {
   ThemeMode _themeMode = ThemeMode.system; // Mode tema default
 
@@ -21,6 +24,7 @@ class _MyAppState extends State<MyApp> {
       _themeMode = mode;
     });
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -70,9 +74,11 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages[_selectedIndex], // Menampilkan halaman berdasarkan indeks yang dipilih
-      bottomNavigationBar: NavigationBar(
+    return ColorfulSafeArea(
+      color: Theme.of(context).colorScheme.surface,
+      child: Scaffold(
+        body: _pages[_selectedIndex], // Menampilkan halaman berdasarkan indeks yang dipilih
+        bottomNavigationBar: NavigationBar(
           onDestinationSelected: (int index) {
             setState(() {
               _selectedIndex = index;
@@ -89,7 +95,9 @@ class _HomePageState extends State<HomePage> {
               label: 'Search',
             ),
           ], // Mengubah halaman saat item di-tap
+        ),
       ),
     );
   }
 }
+
