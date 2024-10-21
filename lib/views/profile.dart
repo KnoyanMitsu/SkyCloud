@@ -120,6 +120,7 @@ class _ProfilePageState extends State<ProfilePage> {
               (context, index) {
                 final feed = _feed[index];
                 final post = feed['post'];
+                final reason = feed['reason'];
                 final author = post['author'];
                 final desc = post['record']['text'];
                 final embed = post['embed'];
@@ -136,6 +137,22 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      reason != null ?
+                      Padding(
+                          padding: const EdgeInsets.only(left: 50, bottom: 5),
+                          child: Row(
+                          children: [
+                              const Icon(
+                                Icons.repeat,
+                                size: 16,
+                              ),
+                              SizedBox(width: 5,),
+                              Text(
+                                "Repost by ${reason['by']['displayName']}",
+                              ),
+                            ],
+                          ),
+                    ): Container(),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -156,7 +173,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             children: [
                               Row(
                                 children: [
-                                   Text(author['displayName'],
+                                  Text(author['displayName'],
                                   style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold)),
@@ -168,7 +185,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               //   ),
                                 ],
                               ),
-                                                            desc != null ? Text(desc) : Container(),
+                              desc != null ? Text(desc) : Container(),
                               const SizedBox(
                                 height: 10,
                               ),
