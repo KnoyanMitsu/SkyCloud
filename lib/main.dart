@@ -5,12 +5,19 @@ import 'package:skycloud/views/feed.dart';
 import 'package:skycloud/views/profile.dart';
 
 import 'views/search.dart'; // Import file search.dart
-import 'views/test.dart';
 
 void main() {
 
     fvp.registerWith(options: {
-    'lowLatency': 1, // optional for network streams
+    'video.decoders': ['FFmpeg'],
+    'platform': [
+      'android','linux'],
+    'lowLatency': 1,
+     'player': {
+        'buffer': '2000+60000',
+        'demux.buffer.protocols': 'file,http,https', // if data is not enough, cache 2s, max is 60s
+        'demux.buffer.ranges': '8', // or other integer value as string
+      } // optional for network streams
     });
   runApp(MyApp());
 }
@@ -74,7 +81,6 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _pages = [
     const FeedPage(),
     SearchPage(),
-    SinglePlayerMultipleVideoWidget()
   ];
 
 
@@ -100,10 +106,6 @@ class _HomePageState extends State<HomePage> {
             NavigationDestination(
               icon: Icon(Icons.search),
               label: 'Search',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.settings ),
-              label: 'Test Room',
             ),
           ], // Mengubah halaman saat item di-tap
         ),

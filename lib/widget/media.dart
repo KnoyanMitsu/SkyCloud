@@ -33,7 +33,7 @@ class _VideoPlayersState extends State<VideoPlayers>
     super.initState();
     player = Player()
       ..media = url
-      ..loop = -1
+      ..loop = 0
       ..state = PlaybackState.playing;
 
     player.updateTexture();

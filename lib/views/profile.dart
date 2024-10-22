@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:skycloud/controller/profile.dart';
@@ -62,7 +63,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 alignment: Alignment.center,
                 children: [
                   profile?['banner'] != null
-                      ? Image.network(profile?['banner'], fit: BoxFit.fitWidth)
+                      ? CachedNetworkImage(imageUrl: profile?['banner'], fit: BoxFit.fitWidth)
                       : Container(
                           color: Theme.of(context).colorScheme.surface,
                           width: double.infinity,
@@ -79,7 +80,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     CircleAvatar(
                       radius: 50,
-                      backgroundImage: NetworkImage(profile?['avatar'] ?? ''),
+                      backgroundImage: CachedNetworkImageProvider(profile?['avatar'] ?? ''),
                     ),
                     Text(
                       profile?['displayName'] ?? 'No Name',
@@ -208,7 +209,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                                 ),
                                               );
                                             },
-                                            child: Image.network(
+
+                                            child: CachedNetworkImage(imageUrl: 
                                               thumbUrl,
                                               height: 300,
                                               width: 430,

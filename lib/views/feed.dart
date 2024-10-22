@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:skycloud/controller/feed.dart';
 import 'package:skycloud/widget/fullimage.dart';
@@ -155,7 +156,7 @@ class _FeedPageState extends State<FeedPage> {
                               },
                               child: CircleAvatar(
                                 radius: 30,
-                                backgroundImage: NetworkImage(author['avatar']),
+                                backgroundImage: CachedNetworkImageProvider( author['avatar']),
                               ),
                             ),
                             const SizedBox(
@@ -211,8 +212,8 @@ class _FeedPageState extends State<FeedPage> {
                                                 ),
                                               );
                                             },
-                                            child: Image.network(
-                                              thumbUrl,
+                                            child: CachedNetworkImage(
+                                              imageUrl: thumbUrl,
                                               height: 300,
                                               width: 430,
                                               fit: BoxFit.cover,
