@@ -1,15 +1,23 @@
 import 'package:colorful_safe_area/colorful_safe_area.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';// Tambahkan ini
+import 'package:fvp/fvp.dart' as fvp;
 import 'package:skycloud/views/feed.dart';
 import 'package:skycloud/views/profile.dart';
 
 import 'views/search.dart'; // Import file search.dart
+import 'views/test.dart';
 
 void main() {
+
+    fvp.registerWith(options: {
+    'lowLatency': 1, // optional for network streams
+    });
   runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -43,8 +51,7 @@ class _MyAppState extends State<MyApp> {
       initialRoute: '/',
       routes: {
         '/': (context) => HomePage(toggleTheme: toggleTheme), // Pass toggleTheme ke HomePage
-        '/search': (context) => SearchPage(),
-        '/profile': (context) => ProfilePage(),
+        '/profile': (context) => const ProfilePage(),
       },
     );
   }
@@ -54,7 +61,7 @@ class _MyAppState extends State<MyApp> {
 class HomePage extends StatefulWidget {
   final Function(ThemeMode) toggleTheme; // Fungsi untuk mengganti tema
 
-  HomePage({required this.toggleTheme});
+  const HomePage({super.key, required this.toggleTheme});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -65,9 +72,9 @@ class _HomePageState extends State<HomePage> {
 
   // Daftar halaman yang bisa dinavigasi
   final List<Widget> _pages = [
-    FeedPage(),
+    const FeedPage(),
     SearchPage(),
-
+    SinglePlayerMultipleVideoWidget()
   ];
 
 
@@ -93,6 +100,10 @@ class _HomePageState extends State<HomePage> {
             NavigationDestination(
               icon: Icon(Icons.search),
               label: 'Search',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.settings ),
+              label: 'Test Room',
             ),
           ], // Mengubah halaman saat item di-tap
         ),

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../controller/search.dart';  // Import SearchController
 
 class SearchPage extends StatefulWidget {
+  const SearchPage({super.key});
+
   @override
   _SearchPageState createState() => _SearchPageState();
 }
@@ -39,7 +41,7 @@ class _SearchPageState extends State<SearchPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
             TextField(
@@ -54,12 +56,12 @@ class _SearchPageState extends State<SearchPage> {
                 }
               },
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             // Tampilkan indikator loading
             if (_isLoading)
-              CircularProgressIndicator(),
+              const CircularProgressIndicator(),
             // Tampilkan hasil pencarian
             Expanded(
               child: ListView.builder(
@@ -69,7 +71,7 @@ class _SearchPageState extends State<SearchPage> {
                   return ListTile(
                     leading: 
                     actor['avatar'] == null ? 
-                    CircleAvatar() :
+                    const CircleAvatar() :
                     CircleAvatar(backgroundImage: NetworkImage(actor['avatar']),),
                     title: Text(actor['displayName']), 
                     subtitle: Text(actor['handle']),

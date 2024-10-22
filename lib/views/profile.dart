@@ -2,8 +2,11 @@ import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:skycloud/controller/profile.dart';
 
+import '../widget/fullimage.dart';
+import '../widget/media.dart';
+
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({super.key});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -14,7 +17,6 @@ class _ProfilePageState extends State<ProfilePage> {
   Map<String, dynamic>? _profile;
   List<dynamic> _feed = [];
   bool _isLoading = true;
-  bool _isDescriptionExpanded = false;
 
   @override
   void didChangeDependencies() {
@@ -44,10 +46,9 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final profile = _profile;
-    final screenHeight = MediaQuery.of(context).size.height;
 
     return ColorfulSafeArea(
-            color: Theme.of(context).colorScheme.surface,
+      color: Theme.of(context).colorScheme.surface,
       child: Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
@@ -90,30 +91,10 @@ class _ProfilePageState extends State<ProfilePage> {
                             '@' + profile?['handle'],
                             style: const TextStyle(color: Colors.grey),
                           )
-                        : Text(
+                        : const Text(
                             'No Handle',
-                            style: const TextStyle(color: Colors.grey),
+                            style: TextStyle(color: Colors.grey),
                           ),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        const Text("Followers: "),
-                        Text(
-                          profile?['followersCount'].toString() ?? '0',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(width: 40),
-                        const Text("Following: "),
-                        Text(
-                          profile?["followsCount"].toString() ?? "0",
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        )
-                      ],
-                    ),
-                    _buildDescription(profile?['description'] ?? ""),
-                    Divider(),
-                    const SizedBox(height: 20),
                   ],
                 ),
               ),
@@ -128,11 +109,15 @@ class _ProfilePageState extends State<ProfilePage> {
                   final desc = post['record']['text'];
                   final embed = post['embed'];
                   String? thumbUrl;
+                  String? fullUrl;
                   if (embed != null &&
                       embed['images'] != null &&
                       embed['images'].isNotEmpty) {
                     thumbUrl = embed['images'][0]['thumb'];
+                    fullUrl = embed['images'][0]['fullsize'];
                   }
+
+                  bool isVideo = embed != null && embed['playlist'] != null && embed['playlist'].endsWith('.m3u8');
 
                   return Padding(
                     padding: const EdgeInsets.symmetric(
@@ -149,7 +134,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       Icons.repeat,
                                       size: 16,
                                     ),
-                                    SizedBox(width: 5),
+                                    const SizedBox(width: 5),
                                     Text(
                                       "Repost by ${reason['by']['displayName']}",
                                     ),
@@ -183,71 +168,112 @@ class _ProfilePageState extends State<ProfilePage> {
                                         style: const TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold)),
-                                    SizedBox(width: 5),
+                                    const SizedBox(width: 5),
+                                    Text(author['handle'].length > 10 ? author['handle'].substring(0, 10) + '...' : author['handle'],
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                            fontSize: 14,
+                                            )),
+                                    const SizedBox()
                                   ],
                                 ),
                                 desc != null ? Text(desc) : Container(),
                                 const SizedBox(
                                   height: 10,
                                 ),
-                                thumbUrl != null
+                                isVideo
                                     ? ClipRRect(
                                         borderRadius: BorderRadius.circular(10),
-                                        child: Image.network(
-                                          thumbUrl,
-                                          height: 430,
+                                        child: SizedBox(
                                           width: 430,
-                                          fit: BoxFit.cover,
+                                          height: 300,
+                                          child: VideoPlayers(
+                                          url: embed['playlist'],
+                                          width: 500,
+                                          height: 300,
+                                          ),
                                         ),
                                       )
-                                    : Container(),
-                                const SizedBox(height: 5),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.favorite_outline,
+                                    : thumbUrl != null
+                                        ? ClipRRect(
+                                            borderRadius: BorderRadius.circular(10),
+                                            child: GestureDetector(
+                                              onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => FullImagePage(
+                                                          imageUrl: fullUrl!,
+                                                        ),
+                                                ),
+                                              );
+                                            },
+                                            child: Image.network(
+                                              thumbUrl,
+                                              height: 300,
+                                              width: 430,
+                                              fit: BoxFit.cover,
+                                            ),
+                                            )
+                                          )
+                                        : Container(),
+                                        const SizedBox(height: 5),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              IconButton(
+                                                icon: const Icon(
+                                                  Icons.favorite_outline,
+                                                ),
+                                                onPressed: () {},
+                                              ),
+                                              Text(post['likeCount'] >= 10000000
+                                                      ? '${(post['likeCount'] / 10000000).toStringAsFixed(1)}M'
+                                                      : post['likeCount'] >= 1000
+                                                          ? '${(post['likeCount'] / 1000).toStringAsFixed(0)}k'
+                                                          : post['likeCount'].toString()),
+                                            ],
                                           ),
-                                          onPressed: () {},
-                                        ),
-                                        Text(post['likeCount'].toString()),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.share_outlined,
+                                          Row(
+                                            children: [
+                                              IconButton(
+                                                icon: const Icon(
+                                                  Icons.share_outlined,
+                                                ),
+                                                onPressed: () {},
+                                              ),
+                                              Text(
+                                                  post['repostCount'] >= 10000000
+                                                      ? '${(post['repostCount'] / 10000000).toStringAsFixed(1)}M'
+                                                      : post['repostCount'] >= 1000
+                                                          ? '${(post['repostCount'] / 1000).toStringAsFixed(0)}k'
+                                                          : post['repostCount'].toString()),
+                                            ],
                                           ),
-                                          onPressed: () {},
-                                        ),
-                                        Text(post['repostCount'].toString()),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        SizedBox(width: 30),
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.comment_outlined,
-                                          ),
-                                          onPressed: () {},
-                                        ),
-                                        Text(post['replyCount'].toString()),
-                                        SizedBox(width: 30),
-                                      ],
-                                    )
-                                  ],
-                                ),
+                                          Row(
+                                            children: [
+                                              IconButton(
+                                                icon: const Icon(
+                                                  Icons.comment_outlined,
+                                                ),
+                                                onPressed: () {},
+                                              ),
+                                              Text(post['replyCount'] >= 10000000
+                                                      ? '${(post['replyCount'] / 10000000).toStringAsFixed(1)}M'
+                                                      : post['replyCount'] >= 1000
+                                                          ? '${(post['replyCount'] / 1000).toStringAsFixed(0)}k'
+                                                          : post['replyCount'].toString()),
+                                            ],
+                                          )
+                                        ],
+                                      ),
                               ],
                             )),
                           ],
                         ),
-                        const Divider(),
                       ],
                     ),
                   );
@@ -258,34 +284,6 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildDescription(String description) {
-    final maxLength = 100;
-    final end = description.length > maxLength ? maxLength : description.length;
-
-    return Column(
-      children: [
-        Text(
-          _isDescriptionExpanded
-              ? description
-              : description.substring(0, end) + '...', // Sesuaikan panjang karakter
-          maxLines: _isDescriptionExpanded ? null : 2, // Sesuaikan jumlah baris
-          style: const TextStyle(fontSize: 16),
-        ),
-        TextButton(
-          onPressed: () {
-            setState(() {
-              _isDescriptionExpanded = !_isDescriptionExpanded;
-            });
-          },
-          child: Text(
-            _isDescriptionExpanded ? 'Show Less' : 'See More',
-            style: TextStyle(color: Colors.blue),
-          ),
-        ),
-      ],
     );
   }
 }

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:skycloud/controller/feed.dart';
+import 'package:skycloud/widget/fullimage.dart';
+
+import '../widget/media.dart';
 
 class FeedPage extends StatefulWidget {
-  const FeedPage({Key? key}) : super(key: key);
+  const FeedPage({super.key});
 
   @override
   _FeedPageState createState() => _FeedPageState();
@@ -100,80 +103,124 @@ class _FeedPageState extends State<FeedPage> {
                   ),
                 ),
                 SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      if (index == _feed.length && _isLoadingMore) {
-                        return const Center(child: CircularProgressIndicator());  // Tampilkan loading saat mengambil data baru
-                      }
-                      final feed = _feed[index];
-                      final post = feed['post'];
-                      final author = post['author'];
-                      final desc = post['record']['text'];
-                      final embed = post['embed'];
-                      String? thumbUrl;
-                      if (embed != null &&
-                          embed['images'] != null &&
-                          embed['images'].isNotEmpty) {
-                        thumbUrl = embed['images'][0]['thumb'];
-                      }
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final feed = _feed[index];
+                  final post = feed['post'];
+                  final reason = feed['reason'];
+                  final author = post['author'];
+                  final desc = post['record']['text'];
+                  final embed = post['embed'];
+                  String? thumbUrl;
+                  String? fullUrl;
+                  if (embed != null &&
+                      embed['images'] != null &&
+                      embed['images'].isNotEmpty) {
+                    thumbUrl = embed['images'][0]['thumb'];
+                    fullUrl = embed['images'][0]['fullsize'];
+                  }
 
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
-                        child: Column(
+                  bool isVideo = embed != null && embed['playlist'] != null && embed['playlist'].endsWith('.m3u8');
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        reason != null
+                            ? Padding(
+                                padding: const EdgeInsets.only(left: 50, bottom: 5),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.repeat,
+                                      size: 16,
+                                    ),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      "Repost by ${reason['by']['displayName']}",
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : Container(),
+                        Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/profile',
+                                    arguments: author['did']);
+                              },
+                              child: CircleAvatar(
+                                radius: 30,
+                                backgroundImage: NetworkImage(author['avatar']),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                                child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.pushNamed(
-                                        context, '/profile',
-                                        arguments: author['did']);
-                                  },
-                                  child: CircleAvatar(
-                                    radius: 30,
-                                    backgroundImage: author['avatar'] != null
-                                        ? NetworkImage(author['avatar'])
-                                        : null,
-                                    child: author['avatar'] == null
-                                        ? const Icon(Icons.person) // Icon jika avatar kosong
-                                        : null,
-                                  ),
+                                Row(
+                                  children: [
+                                    Text(author['displayName'],
+                                        style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold)),
+                                    const SizedBox(width: 5),
+                                    Text(author['handle'].length > 10 ? author['handle'].substring(0, 10) + '...' : author['handle'],
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                            fontSize: 14,
+                                            )),
+                                    const SizedBox()
+                                  ],
                                 ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            author['displayName'] ?? 'Unknown',
-                                            style: const TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold),
+                                desc != null ? Text(desc) : Container(),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                isVideo
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: SizedBox(
+                                          width: 430,
+                                          height: 300,
+                                          child: VideoPlayers(
+                                          url: embed['playlist'],
+                                          width: 500,
+                                          height: 300,
                                           ),
-                                          const SizedBox(width: 5),
-                                        ],
-                                      ),
-                                      desc != null ? Text(desc) : Container(),
-                                      const SizedBox(height: 10),
-                                      thumbUrl != null
-                                          ? ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              child: Image.network(
-                                                thumbUrl,
-                                                height: 430,
-                                                width: 430,
-                                                fit: BoxFit.cover,
-                                              ),
+                                        ),
+                                      )
+                                    : thumbUrl != null
+                                        ? ClipRRect(
+                                            borderRadius: BorderRadius.circular(10),
+                                            child: GestureDetector(
+                                              onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => FullImagePage(
+                                                          imageUrl: fullUrl!,
+                                                        ),
+                                                ),
+                                              );
+                                            },
+                                            child: Image.network(
+                                              thumbUrl,
+                                              height: 300,
+                                              width: 430,
+                                              fit: BoxFit.cover,
+                                            ),
                                             )
-                                          : Container(),
-                                      const SizedBox(height: 5),
+                                          )
+                                        : Container(),
+                                        const SizedBox(height: 5),
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
@@ -186,7 +233,11 @@ class _FeedPageState extends State<FeedPage> {
                                                 ),
                                                 onPressed: () {},
                                               ),
-                                              Text(post['likeCount'].toString()),
+                                              Text(post['likeCount'] >= 10000000
+                                                      ? '${(post['likeCount'] / 10000000).toStringAsFixed(1)}M'
+                                                      : post['likeCount'] >= 1000
+                                                          ? '${(post['likeCount'] / 1000).toStringAsFixed(0)}k'
+                                                          : post['likeCount'].toString()),
                                             ],
                                           ),
                                           Row(
@@ -197,8 +248,12 @@ class _FeedPageState extends State<FeedPage> {
                                                 ),
                                                 onPressed: () {},
                                               ),
-                                              Text(post['repostCount']
-                                                  .toString()),
+                                              Text(
+                                                  post['repostCount'] >= 10000000
+                                                      ? '${(post['repostCount'] / 10000000).toStringAsFixed(1)}M'
+                                                      : post['repostCount'] >= 1000
+                                                          ? '${(post['repostCount'] / 1000).toStringAsFixed(0)}k'
+                                                          : post['repostCount'].toString()),
                                             ],
                                           ),
                                           Row(
@@ -209,24 +264,26 @@ class _FeedPageState extends State<FeedPage> {
                                                 ),
                                                 onPressed: () {},
                                               ),
-                                              Text(post['replyCount'].toString()),
+                                              Text(post['replyCount'] >= 10000000
+                                                      ? '${(post['replyCount'] / 10000000).toStringAsFixed(1)}M'
+                                                      : post['replyCount'] >= 1000
+                                                          ? '${(post['replyCount'] / 1000).toStringAsFixed(0)}k'
+                                                          : post['replyCount'].toString()),
                                             ],
                                           )
                                         ],
                                       ),
-                                    ],
-                                  ),
-                                ),
                               ],
-                            ),
-                            const Divider(),
+                            )),
                           ],
                         ),
-                      );
-                    },
-                    childCount: _feed.length + (_isLoadingMore ? 1 : 0),  // Tambahkan satu child lagi jika loading data baru
-                  ),
-                ),
+                      ],
+                    ),
+                  );
+                },
+                childCount: _feed.length,
+              ),
+            ),
               ],
             ),
       )
