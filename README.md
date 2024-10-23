@@ -1,6 +1,6 @@
-# skycloud
+# SkyCloud
 
-A new Flutter project.
+A Bluesky client with flutter
 
 ## Getting Started
 
