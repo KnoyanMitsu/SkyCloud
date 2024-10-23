@@ -10,7 +10,7 @@ import 'views/search.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   fvp.registerWith(options: {
-    'video.decoders': ['AMediaCodec'],
+    'video.decoders': ['FFMpeg','MediaCodec'],
     'platform': ['android', 'linux'],
     'lowLatency': 1,
     'player': {

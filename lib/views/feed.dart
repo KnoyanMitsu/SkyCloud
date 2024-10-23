@@ -197,6 +197,7 @@ class FeedPageState extends State<FeedPage> {
                                           url: embed['playlist'],
                                           width: 400,
                                           height: 200,
+                                          thumb: embed['thumbnail'],
                                           ),
                                         ),
                                       )

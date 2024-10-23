@@ -214,6 +214,7 @@ class ProfilePageState extends State<ProfilePage> {
                                           url: embed['playlist'],
                                           width: 500,
                                           height: 300,
+                                          thumb: embed['thumbnail'],
                                           ),
                                         ),
                                       )

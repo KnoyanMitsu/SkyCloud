@@ -1,17 +1,21 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fvp/mdk.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:http_parser/http_parser.dart';
 
 class VideoPlayers extends StatefulWidget {
   final String url;
   final double width;
   final double height;
+  final String thumb;
 
   const VideoPlayers({
     super.key,
     required this.url,
     required this.width,
     required this.height,
+    required this.thumb,
   });
 
   @override
@@ -27,12 +31,12 @@ class _VideoPlayersState extends State<VideoPlayers>
   String get url => widget.url;
   double get videoWidth => widget.width;
   double get videoHeight => widget.height;
+  String get thumb => widget.thumb;
 
   @override
   void initState() {
     super.initState();
-    player = Player(); // Inisialisasi terlebih dahulu
-
+    player = Player();
     playbackState = ValueNotifier(PlaybackState.stopped);
     _controller = AnimationController(
       vsync: this,
@@ -46,27 +50,24 @@ class _VideoPlayersState extends State<VideoPlayers>
     super.dispose();
   }
 
-  // Fungsi untuk memuat video ketika terlihat
   void _loadVideo() {
     player
       ..media = url
       ..loop = -1
       ..state = PlaybackState.playing;
-
-  // Fungsi untuk menghentikan video jika tidak terlihat
+        player.updateTexture();
+    playbackState.value = PlaybackState.playing;
   }
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<PlaybackState>( 
-      valueListenable: playbackState,
-      builder: (context, state, _) {
-      return VisibilityDetector(
+    return VisibilityDetector(
       key: Key(url),
       onVisibilityChanged:(visibilityInfo) {
         var visiblePercentage = visibilityInfo.visibleFraction * 100;
-        if (visiblePercentage >= 90) {
+        if (visiblePercentage >= 90 && player.state != PlaybackState.playing) {
           _loadVideo();
+              print(player.videoDecoders);
         } else if (player.state == PlaybackState.playing && visiblePercentage <= 70) {
           player.state = PlaybackState.paused;
         }
@@ -88,7 +89,13 @@ class _VideoPlayersState extends State<VideoPlayers>
             Container(
               width: videoWidth,
               height: videoHeight,
-              color: Colors.black,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: CachedNetworkImageProvider(thumb
+                  
+                  ),
+                )
+              ),
               child: ValueListenableBuilder<int?>(
                 valueListenable: player.textureId,
                 builder: (context, id, _) {
@@ -136,8 +143,6 @@ class _VideoPlayersState extends State<VideoPlayers>
           ],
         ),
       ),
-    );
-      }
     );
   }
 }
