@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import '../services/getFeed.dart';
+import '../services/getfeed.dart';
 import '../services/url.dart';
 
 class Feed {

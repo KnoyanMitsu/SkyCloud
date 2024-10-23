@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 
 import '../controller/search.dart';  // Import SearchController
@@ -6,11 +8,12 @@ class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _SearchPageState createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> {
-  final search _searchController = search();
+  final Search _searchController = Search();
   List<dynamic> _results = [];  // Menyimpan hasil pencarian
   bool _isLoading = false;      // Indikator loading
 
@@ -26,7 +29,9 @@ class _SearchPageState extends State<SearchPage> {
         _results = results;
       });
     } catch (error) {
-      print('Error: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $error')),
+      );
     } finally {
       setState(() {
         _isLoading = false;  // Sembunyikan loading setelah selesai
@@ -47,8 +52,9 @@ class _SearchPageState extends State<SearchPage> {
             TextField(
               decoration: InputDecoration(
                 labelText: 'Search',
-                border: OutlineInputBorder(borderRadius: 
-              BorderRadius.circular(100.0),),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(100.0),
+                ),
               ),
               onSubmitted: (value) {
                 if (value.isNotEmpty) {
@@ -60,8 +66,7 @@ class _SearchPageState extends State<SearchPage> {
               height: 20,
             ),
             // Tampilkan indikator loading
-            if (_isLoading)
-              const CircularProgressIndicator(),
+            if (_isLoading) const CircularProgressIndicator(),
             // Tampilkan hasil pencarian
             Expanded(
               child: ListView.builder(
@@ -69,14 +74,19 @@ class _SearchPageState extends State<SearchPage> {
                 itemBuilder: (context, index) {
                   final actor = _results[index];
                   return ListTile(
-                    leading: 
-                    actor['avatar'] == null ? 
-                    const CircleAvatar() :
-                    CircleAvatar(backgroundImage: NetworkImage(actor['avatar']),),
-                    title: Text(actor['displayName']), 
+                    leading: actor['avatar'] == null
+                        ? const CircleAvatar()
+                        : CircleAvatar(
+                            backgroundImage: NetworkImage(actor['avatar']),
+                          ),
+                    title: Text(actor['displayName']),
                     subtitle: Text(actor['handle']),
-                    onTap: (){
-                      Navigator.pushNamed(context, '/profile', arguments: actor['did']);
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        '/profile',
+                        arguments: actor['did'],
+                      );
                     },
                   );
                 },
@@ -88,3 +98,4 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 }
+

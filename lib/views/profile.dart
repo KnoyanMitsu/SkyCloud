@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, prefer_interpolation_to_compose_strings
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
@@ -10,14 +12,13 @@ class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  ProfilePageState createState() => ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class ProfilePageState extends State<ProfilePage> {
   final Feed _profileController = Feed();
   Map<String, dynamic>? _profile;
   List<dynamic> _feed = [];
-  bool _isLoading = true;
 
   @override
   void didChangeDependencies() {
@@ -28,19 +29,19 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _fetchProfile(String did) async {
     setState(() {
-      _isLoading = true;
     });
-    
+  
     try {
       final profile = await _profileController.getProfile(did);
       final feed = await _profileController.getFeed(did);
       setState(() {
         _profile = profile;
         _feed = feed;
-        _isLoading = false;
       });
     } on Exception catch (error) {
-      print('Error: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $error')),
+      );
     }
   }
 

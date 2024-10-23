@@ -2,10 +2,10 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import '../services/getSearch.dart';
+import '../services/getsearch.dart';
 import '../services/url.dart';
 
-class search {
+class Search {
   final SearchService searchController = SearchService();
   final UrlService urlController = UrlService();
   

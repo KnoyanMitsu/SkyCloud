@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:skycloud/controller/feed.dart';
@@ -9,10 +11,10 @@ class FeedPage extends StatefulWidget {
   const FeedPage({super.key});
 
   @override
-  _FeedPageState createState() => _FeedPageState();
+  FeedPageState createState() => FeedPageState();
 }
 
-class _FeedPageState extends State<FeedPage> {
+class FeedPageState extends State<FeedPage> {
   final Feed feedController = Feed();
   List<dynamic> _feed = [];
   bool _isLoading = true;
@@ -40,7 +42,9 @@ class _FeedPageState extends State<FeedPage> {
         _isLoading = false;
       });
     } on Exception catch (error) {
-      print('Error: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $error')),
+      );
       setState(() {
         _isLoading = false;
       });
@@ -63,7 +67,9 @@ class _FeedPageState extends State<FeedPage> {
         });
       }
     } on Exception catch (error) {
-      print('Error: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $error')),
+      );
     } finally {
       setState(() {
         _isLoadingMore = false;

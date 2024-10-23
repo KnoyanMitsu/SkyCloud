@@ -8,11 +8,11 @@ class VideoPlayers extends StatefulWidget {
   final double height;
 
   const VideoPlayers({
-    Key? key,
+    super.key,
     required this.url,
     required this.width,
     required this.height,
-  }) : super(key: key);
+  });
 
   @override
   State<VideoPlayers> createState() => _VideoPlayersState();
@@ -57,7 +57,6 @@ class _VideoPlayersState extends State<VideoPlayers>
       ..state = PlaybackState.playing;
 
     player.updateTexture();
-    print('Hello There');
     _isVideoLoaded = true;
     playbackState.value = PlaybackState.playing;
   }
@@ -65,7 +64,6 @@ class _VideoPlayersState extends State<VideoPlayers>
   // Fungsi untuk menghentikan video jika tidak terlihat
   void _disposeVideo() {
     if (_isVideoLoaded) {
-      print('Kaboom');
       player.dispose();
       _isVideoLoaded = false;
       playbackState.value = PlaybackState.stopped;

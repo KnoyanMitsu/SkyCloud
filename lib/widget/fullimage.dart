@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
@@ -11,13 +13,13 @@ import 'package:permission_handler/permission_handler.dart';
 class FullImagePage extends StatefulWidget {
   final String imageUrl;
 
-  const FullImagePage({Key? key, required this.imageUrl}) : super(key: key);
+  const FullImagePage({super.key, required this.imageUrl});
 
   @override
-  _FullImagePageState createState() => _FullImagePageState();
+  FullImagePageState createState() => FullImagePageState();
 }
 
-class _FullImagePageState extends State<FullImagePage> {
+class FullImagePageState extends State<FullImagePage> {
   bool _isLoading = false;
   Uint8List? _imageBytes;
   String? errorText;
@@ -45,15 +47,17 @@ class _FullImagePageState extends State<FullImagePage> {
       setState(() {
         _isLoading = false;
       });
-      print('Failed to load image: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
     }
   }
 
   Future<void> _saveImageToDevice() async {
     try {
-      final String appName = 'SkyCloud';
+      const String appName = 'SkyCloud';
       if (Platform.isAndroid) {
-        final String picturesDirectory = '/storage/emulated/0/Pictures/$appName';
+        const String picturesDirectory = '/storage/emulated/0/Pictures/$appName';
         await Directory(picturesDirectory).create(recursive: true);
         final String fileName = widget.imageUrl.split('/').last;
         final File imageFile = File('$picturesDirectory/$fileName');
@@ -75,7 +79,9 @@ class _FullImagePageState extends State<FullImagePage> {
         );
       }
     } catch (e) {
-      print('Failed to save image: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
     }
   }
 
@@ -123,7 +129,7 @@ class _FullImagePageState extends State<FullImagePage> {
       backgroundColor: Colors.black,
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -150,28 +156,27 @@ class _FullImagePageState extends State<FullImagePage> {
   }
 
   Widget buildErrorWidget() {
-    return Container(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              errorText!,
-              style: TextStyle(color: Color.fromRGBO(135, 182, 255, 1)),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  errorText = null;
-                });
-                _loadImage();
-              },
-              child: Text('Retry'),
-            ),
-          ],
-        ),
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            errorText!,
+            style: const TextStyle(color: Color.fromRGBO(135, 182, 255, 1)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                errorText = null;
+              });
+              _loadImage();
+            },
+            child: const Text('Retry'),
+          ),
+        ],
       ),
     );
   }
 }
+
