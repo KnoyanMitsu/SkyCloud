@@ -51,6 +51,7 @@ class MyAppState extends State<MyApp> {
       routes: {
         '/': (context) => const HomePage(),
         '/profile': (context) => const ProfilePage(),
+        '/detail': (context) => const ProfilePage(),
       },
     );
   }

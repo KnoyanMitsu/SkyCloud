@@ -1,11 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:skycloud/controller/feed.dart';
+import 'package:skycloud/views/detailpost.dart';
 import 'package:skycloud/widget/fullimage.dart';
-
-import '../widget/media.dart';
+import 'package:skycloud/widget/media.dart';
 
 class FeedPage extends StatefulWidget {
   const FeedPage({super.key});
@@ -15,18 +14,17 @@ class FeedPage extends StatefulWidget {
 }
 
 class FeedPageState extends State<FeedPage> {
-  final Feed feedController = Feed();
+  final Feed _feedController = Feed();
   List<dynamic> _feed = [];
   bool _isLoading = true;
-  bool _isLoadingMore = false;  // Status ketika mengambil data baru
-
-  final ScrollController _scrollController = ScrollController();  // Tambahkan ScrollController
+  bool _isLoadingMore = false;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _fetchFeed();  // Memanggil feed ketika halaman dimuat
-    _scrollController.addListener(_scrollListener);  // Tambahkan listener untuk scroll
+    _fetchFeed();
+    _scrollController.addListener(_scrollListener);
   }
 
   // Fungsi untuk mengambil feed pertama kali
@@ -36,7 +34,7 @@ class FeedPageState extends State<FeedPage> {
     });
 
     try {
-      final feed = await feedController.getFeed();
+      final feed = await _feedController.getFeed();
       setState(() {
         _feed = feed;
         _isLoading = false;
@@ -60,7 +58,7 @@ class FeedPageState extends State<FeedPage> {
     });
 
     try {
-      final newFeed = await feedController.getFeedNew();
+      final newFeed = await _feedController.getFeedNew();
       if (newFeed.isNotEmpty) {
         setState(() {
           _feed.addAll(newFeed);  // Tambahkan feed baru ke dalam list
@@ -127,7 +125,17 @@ class FeedPageState extends State<FeedPage> {
 
                   bool isVideo = embed != null && embed['playlist'] != null && embed['playlist'].endsWith('.m3u8');
 
-                  return Padding(
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(context, 
+                      MaterialPageRoute(
+                                                  builder: (context) => DetailPage(
+                                                          uri: post['uri'],
+                                                        ),
+                                                )
+                                              );
+                    },
+                    child: Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16.0, vertical: 8.0),
                     child: Column(
@@ -160,7 +168,7 @@ class FeedPageState extends State<FeedPage> {
                               },
                               child: CircleAvatar(
                                 radius: 30,
-                                backgroundImage: CachedNetworkImageProvider( author['avatar']),
+                                backgroundImage: NetworkImage(author['avatar']),
                               ),
                             ),
                             const SizedBox(
@@ -193,10 +201,12 @@ class FeedPageState extends State<FeedPage> {
                                     ? ClipRRect(
                                         borderRadius: BorderRadius.circular(10),
                                         child: SizedBox(
+                                          width: 430,
+                                          height: 300,
                                           child: VideoPlayers(
                                           url: embed['playlist'],
-                                          width: 400,
-                                          height: 200,
+                                          width: 500,
+                                          height: 300,
                                           thumb: embed['thumbnail'],
                                           ),
                                         ),
@@ -215,8 +225,9 @@ class FeedPageState extends State<FeedPage> {
                                                 ),
                                               );
                                             },
-                                            child: CachedNetworkImage(
-                                              imageUrl: thumbUrl,
+                                          
+                                            child: CachedNetworkImage(imageUrl: 
+                                              thumbUrl,
                                               height: 300,
                                               width: 430,
                                               fit: BoxFit.cover,
@@ -283,6 +294,7 @@ class FeedPageState extends State<FeedPage> {
                         ),
                       ],
                     ),
+                  )
                   );
                 },
                 childCount: _feed.length,
