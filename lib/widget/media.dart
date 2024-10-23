@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fvp/mdk.dart';
 import 'package:visibility_detector/visibility_detector.dart';
-import 'package:http_parser/http_parser.dart';
 
 class VideoPlayers extends StatefulWidget {
   final String url;
@@ -67,7 +66,6 @@ class _VideoPlayersState extends State<VideoPlayers>
         var visiblePercentage = visibilityInfo.visibleFraction * 100;
         if (visiblePercentage >= 90 && player.state != PlaybackState.playing) {
           _loadVideo();
-              print(player.videoDecoders);
         } else if (player.state == PlaybackState.playing && visiblePercentage <= 70) {
           player.state = PlaybackState.paused;
         }
