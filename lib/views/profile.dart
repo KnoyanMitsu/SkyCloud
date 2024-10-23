@@ -30,7 +30,7 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {
       _isLoading = true;
     });
-
+    
     try {
       final profile = await _profileController.getProfile(did);
       final feed = await _profileController.getFeed(did);
@@ -209,7 +209,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                 ),
                                               );
                                             },
-
+                                          
                                             child: CachedNetworkImage(imageUrl: 
                                               thumbUrl,
                                               height: 300,

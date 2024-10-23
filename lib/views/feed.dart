@@ -189,12 +189,10 @@ class _FeedPageState extends State<FeedPage> {
                                     ? ClipRRect(
                                         borderRadius: BorderRadius.circular(10),
                                         child: SizedBox(
-                                          width: 430,
-                                          height: 300,
                                           child: VideoPlayers(
                                           url: embed['playlist'],
-                                          width: 500,
-                                          height: 300,
+                                          width: 400,
+                                          height: 200,
                                           ),
                                         ),
                                       )

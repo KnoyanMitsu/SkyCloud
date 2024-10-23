@@ -9,7 +9,7 @@ import 'views/search.dart'; // Import file search.dart
 void main() {
 
     fvp.registerWith(options: {
-    'video.decoders': ['FFmpeg'],
+    'video.decoders': ['MediaCoded'],
     'platform': [
       'android','linux'],
     'lowLatency': 1,
