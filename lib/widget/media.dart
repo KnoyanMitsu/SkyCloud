@@ -23,8 +23,6 @@ class _VideoPlayersState extends State<VideoPlayers>
   late Player player; // Tetap gunakan `late`, tapi segera inisialisasi
   late final ValueNotifier<PlaybackState> playbackState;
   late final AnimationController _controller;
-  bool _isVideoVisible = false; // State untuk mengetahui apakah video terlihat
-  bool _isVideoLoaded = false;
 
   String get url => widget.url;
   double get videoWidth => widget.width;
@@ -44,7 +42,6 @@ class _VideoPlayersState extends State<VideoPlayers>
 
   @override
   void dispose() {
-    if (_isVideoLoaded) player.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -53,35 +50,25 @@ class _VideoPlayersState extends State<VideoPlayers>
   void _loadVideo() {
     player
       ..media = url
-      ..loop = 0
+      ..loop = -1
       ..state = PlaybackState.playing;
 
-    player.updateTexture();
-    _isVideoLoaded = true;
-    playbackState.value = PlaybackState.playing;
-  }
-
   // Fungsi untuk menghentikan video jika tidak terlihat
-  void _disposeVideo() {
-    if (_isVideoLoaded) {
-      player.dispose();
-      _isVideoLoaded = false;
-      playbackState.value = PlaybackState.stopped;
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return VisibilityDetector(
+    return ValueListenableBuilder<PlaybackState>( 
+      valueListenable: playbackState,
+      builder: (context, state, _) {
+      return VisibilityDetector(
       key: Key(url),
-      onVisibilityChanged: (visibilityInfo) {
+      onVisibilityChanged:(visibilityInfo) {
         var visiblePercentage = visibilityInfo.visibleFraction * 100;
-        if (visiblePercentage > 50 && !_isVideoVisible) {
-          _loadVideo(); // Load video ketika terlihat lebih dari 50%
-          _isVideoVisible = true;
-        } else if (visiblePercentage <= 50 && _isVideoVisible) {
-          _disposeVideo(); // Dispose video ketika tidak terlihat
-          _isVideoVisible = false;
+        if (visiblePercentage >= 90) {
+          _loadVideo();
+        } else if (player.state == PlaybackState.playing && visiblePercentage <= 70) {
+          player.state = PlaybackState.paused;
         }
       },
       child: GestureDetector(
@@ -92,7 +79,7 @@ class _VideoPlayersState extends State<VideoPlayers>
             } else {
               player.state = PlaybackState.playing;
             }
-          }); 
+          });
         },
         child: Stack(
           alignment: Alignment.center,
@@ -150,5 +137,8 @@ class _VideoPlayersState extends State<VideoPlayers>
         ),
       ),
     );
+      }
+    );
   }
 }
+

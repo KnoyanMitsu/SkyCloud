@@ -92,9 +92,7 @@ class FeedPageState extends State<FeedPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      body: RefreshIndicator(
+    return RefreshIndicator(
         onRefresh: _fetchFeed,
         child: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -291,7 +289,6 @@ class FeedPageState extends State<FeedPage> {
             ),
               ],
             ),
-      )
-    );
+      );
   }
 }

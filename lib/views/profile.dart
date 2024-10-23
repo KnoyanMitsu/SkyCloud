@@ -19,6 +19,7 @@ class ProfilePageState extends State<ProfilePage> {
   final Feed _profileController = Feed();
   Map<String, dynamic>? _profile;
   List<dynamic> _feed = [];
+  bool _isDescriptionExpanded = false;
 
   @override
   void didChangeDependencies() {
@@ -97,6 +98,26 @@ class ProfilePageState extends State<ProfilePage> {
                             'No Handle',
                             style: TextStyle(color: Colors.grey),
                           ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const Text("Followers: "),
+                        Text(
+                          profile?['followersCount'].toString() ?? '0',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(width: 40),
+                        const Text("Following: "),
+                        Text(
+                          profile?["followsCount"].toString() ?? "0",
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
+                    _buildDescription(profile?['description'] ?? ""),
+                    const Divider(),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
@@ -287,6 +308,33 @@ class ProfilePageState extends State<ProfilePage> {
           ],
         ),
       ),
+    );
+  }
+   Widget _buildDescription(String description) {
+    const maxLength = 100;
+    final end = description.length > maxLength ? maxLength : description.length;
+
+    return Column(
+      children: [
+        Text(
+          _isDescriptionExpanded
+              ? description
+              : description.substring(0, end) + '...', // Sesuaikan panjang karakter
+          maxLines: _isDescriptionExpanded ? null : 2, // Sesuaikan jumlah baris
+          style: const TextStyle(fontSize: 16),
+        ),
+        TextButton(
+          onPressed: () {
+            setState(() {
+              _isDescriptionExpanded = !_isDescriptionExpanded;
+            });
+          },
+          child: Text(
+            _isDescriptionExpanded ? 'Show Less' : 'See More',
+            style: const TextStyle(color: Colors.blue),
+          ),
+        ),
+      ],
     );
   }
 }

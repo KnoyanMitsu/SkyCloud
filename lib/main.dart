@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:fvp/fvp.dart' as fvp;
 import 'package:skycloud/views/feed.dart';
 import 'package:skycloud/views/profile.dart';
+import 'package:skycloud/widget/menu.dart';
 
 import 'views/search.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   fvp.registerWith(options: {
-    'video.decoders': ['MediaCoded'],
+    'video.decoders': ['AMediaCodec'],
     'platform': ['android', 'linux'],
     'lowLatency': 1,
     'player': {
@@ -34,7 +35,8 @@ class MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Home',
+      debugShowCheckedModeBanner: false,
+      title: 'SkyBlue',
       theme: ThemeData(
         useMaterial3: true,
         colorSchemeSeed: Colors.blue,
@@ -76,6 +78,8 @@ class HomePageState extends State<HomePage> {
     return ColorfulSafeArea(
       color: Theme.of(context).colorScheme.surface,
       child: Scaffold(
+        drawer: const Menu(),
+        extendBodyBehindAppBar: true,
         body: _pages[_selectedIndex],
         bottomNavigationBar: NavigationBar(
           onDestinationSelected: (int index) {
