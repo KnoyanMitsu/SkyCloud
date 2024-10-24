@@ -134,6 +134,7 @@ class FeedPageState extends State<FeedPage> {
                                                         ),
                                                 )
                                               );
+                                              
                     },
                     child: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -228,8 +229,7 @@ class FeedPageState extends State<FeedPage> {
                                           
                                             child: CachedNetworkImage(imageUrl: 
                                               thumbUrl,
-                                              height: 300,
-                                              width: 430,
+                                              width: 500,
                                               fit: BoxFit.cover,
                                             ),
                                             )
@@ -292,6 +292,7 @@ class FeedPageState extends State<FeedPage> {
                             )),
                           ],
                         ),
+                        const Divider()
                       ],
                     ),
                   )
